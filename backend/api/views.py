@@ -1,4 +1,3 @@
-from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -15,12 +14,11 @@ class Predict(APIView):
         for text in data["text_list"]:
             text = text.replace('\n',' ')
             text_list.append(text)
-        answer = predict(text_list)
+        answer = predict(text_list, data["threshold"])
         if len(answer)!=0:
-            pos_count = answer.count(1)
-            if pos_count >= 0.75*(len(answer)):
+            # pos_count = answer.count(1)
+            # if pos_count >= 0.75*(len(answer)):
 
-                return Response({"message":"Suicidal content warning"}, status=status.HTTP_201_CREATED)
-            else:
+                return Response({"message":"Suicidal content warning", "suicidal_content":answer}, status=status.HTTP_201_CREATED)
+        else:
                 return Response({"message":"Safe content"}, status=status.HTTP_201_CREATED)
-        return Response({"message":"Fail"}, status=status.HTTP_400_BAD_REQUEST)

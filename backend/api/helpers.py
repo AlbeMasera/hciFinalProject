@@ -2,14 +2,15 @@
 import pickle
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
+from .llm_wrapper import pharaphrase_text
 
 # Predict whether the text is suicidal
-def predict(text_list):
+def predict(text_list, threshold):
     from scipy.sparse import spmatrix
 
     # Load the classifier and vectorizer
-    classifier = pickle.load(open("../model/model.pkl", "rb"))
-    vocabulary = pickle.load(open("../model/vectorizer_obj.pkl", "rb"))
+    classifier = pickle.load(open("model/model.pkl", "rb"))
+    vocabulary = pickle.load(open("model/vectorizer_obj.pkl", "rb"))
 
     vectorizer2 = TfidfVectorizer(vocabulary=vocabulary)
 
@@ -23,9 +24,12 @@ def predict(text_list):
     # Make predictions on the new input
     new_input_pred = classifier.predict(to_pred_dense)
 
-    new_input_pred = np.round(new_input_pred)
+    #new_input_pred = np.round(new_input_pred)
     print("Prediction for the new input:", new_input_pred)
     pred_list = []
-    for elem in new_input_pred:
-        pred_list.append(elem[0])
+    for i in range(len(new_input_pred)):
+        if new_input_pred[i][0]>=threshold:
+            modified_text = pharaphrase_text(new_input[i])
+            pred_list.append((new_input[i], modified_text))
+            
     return pred_list
