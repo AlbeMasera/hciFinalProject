@@ -24,12 +24,13 @@ def predict(text_list, threshold):
     # Make predictions on the new input
     new_input_pred = classifier.predict(to_pred_dense)
 
-    #new_input_pred = np.round(new_input_pred)
-    print("Prediction for the new input:", new_input_pred)
+    # new_input_pred = np.round(new_input_pred)
+    print("Prediction for the new input:", [x for x in new_input_pred if x > threshold])
+
     pred_list = []
     for i in range(len(new_input_pred)):
-        if new_input_pred[i][0]>=threshold:
+        if new_input_pred[i][0] >= threshold:
             modified_text = pharaphrase_text(new_input[i])
-            pred_list.append((new_input[i], modified_text))
-            
+            pred_list.append((new_input[i], modified_text["response"]))
+
     return pred_list
